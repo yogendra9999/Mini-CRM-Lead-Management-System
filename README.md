@@ -41,6 +41,35 @@ The main objectives of this project are:
 ## Live Demo
 
 [View Live CRM Application]( https://yogendra9999.github.io/Mini-CRM-Lead-Management-System/)
+
+## Screenshots
+
+### Dashboard
+![Dashboard](assets/screenshots/dashboard.png)
+
+### Leads Management
+![Leads Table](assets/screenshots/leads-table.png)
+
+### Lead Form
+![Lead Form](assets/screenshots/lead-form.png)
+
+### Kanban Board
+![Kanban Board](assets/screenshots/kanban.png)
+
+### Follow-ups
+![Follow-ups](assets/screenshots/follow-ups.png)
+
+### Analytics
+![Analytics](assets/screenshots/analytics.png)
+
+### Notifications
+![Notifications](assets/screenshots/notifications.png)
+
+### Dark Mode
+![Dark Mode](assets/screenshots/dark-mode.png)
+
+### Mobile Responsive View
+![Mobile View](assets/screenshots/mobile-view.png)
 ## Features
 
 ### Dashboard
