@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Mini CRM and Lead Management System">
+	<meta name="theme-color" content="#2563eb">
+	<title>Mini CRM | Lead Management System</title>
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<div id="app" class="crm-app">
+		<aside class="sidebar" id="sidebar">
+			<div class="sidebar-header">
+				<a href="#dashboard" class="brand" aria-label="Mini CRM Dashboard">
+					<span class="brand-icon" aria-hidden="true">CRM</span>
+					<span class="brand-text">Mini CRM</span>
+				</a>
+				<button type="button" class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close navigation">×</button>
+			</div>
+			<nav class="main-navigation" aria-label="Main navigation">
+				<ul class="navigation-list">
+					<li class="navigation-item">
+						<a href="#dashboard" class="navigation-link active" data-section="dashboard">
+							<span class="nav-icon" aria-hidden="true">⌂</span>
+							<span>Dashboard</span>
+						</a>
+					</li>
+					<li class="navigation-item">
+						<a href="#leads" class="navigation-link" data-section="leads">
+							<span class="nav-icon" aria-hidden="true">▣</span>
+							<span>Leads</span>
+						</a>
+					</li>
+					<li class="navigation-item">
+						<a href="#kanban" class="navigation-link" data-section="kanban">
+							<span class="nav-icon" aria-hidden="true">▤</span>
+							<span>Kanban</span>
+						</a>
+					</li>
+					<li class="navigation-item">
+						<a href="#followups" class="navigation-link" data-section="followups">
+							<span class="nav-icon" aria-hidden="true">◷</span>
+							<span>Follow-ups</span>
+							<span class="nav-badge" id="followupNavBadge">0</span>
+						</a>
+					</li>
+					<li class="navigation-item">
+						<a href="#analytics" class="navigation-link" data-section="analytics">
+							<span class="nav-icon" aria-hidden="true">▥</span>
+							<span>Analytics</span>
+						</a>
+					</li>
+					<li class="navigation-item">
+						<a href="#import-export" class="navigation-link" data-section="import-export">
+							<span class="nav-icon" aria-hidden="true">⇅</span>
+							<span>Import / Export</span>
+						</a>
+					</li>
+				</ul>
+			</nav>
+			<div class="sidebar-footer">
+				<div class="role-panel">
+					<span class="role-label">Current Role</span>
+					<strong id="sidebarRoleName">Manager</strong>
+				</div>
+				<a href="#settings" class="navigation-link settings-link" data-section="settings">
+					<span class="nav-icon" aria-hidden="true">⚙</span>
+					<span>Settings</span>
+				</a>
+			</div>
+		</aside>
+		<div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+		<div class="main-wrapper">
+			<header class="topbar">
+				<div class="topbar-left">
+					<button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false">☰</button>
+					<div class="page-heading">
+						<h1 id="pageTitle">Dashboard</h1>
+						<p id="pageSubtitle">Overview of your sales pipeline</p>
+					</div>
+				</div>
+				<div class="topbar-actions">
+					<div class="role-selector-wrapper">
+						<label for="roleSelector" class="sr-only">Select user role</label>
+						<select id="roleSelector" class="role-selector">
+							<option value="Manager">Manager</option>
+                            <option value="Sales Executive">Sales Executive</option>
+						</select>
+					</div>
+					<button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle dark mode" aria-pressed="false">
+						<span id="themeToggleIcon" aria-hidden="true">☾</span>
+						<span id="themeToggleText">Dark Mode</span>
+					</button>
+					<button type="button" class="notification-btn" id="notificationBtn" aria-label="View follow-up notifications" aria-expanded="false" aria-controls="notificationPanel">
+						<span aria-hidden="true">🔔</span>
+						<span class="notification-count" id="notificationCount">0</span>
+					</button>
+					<div class="notification-panel" id="notificationPanel" hidden>
+						<div class="notification-panel-header">
+							<h2>Notifications</h2>
+							<button type="button" id="markNotificationsReadBtn">Mark all read</button>
+						</div>
+						<div class="notification-list" id="notificationList">
+							<p class="empty-message">No notifications.</p>
+						</div>
+					</div>
+				</div>
+			</header>
+			<main class="main-content" id="mainContent">
+				<section class="page-section active-section" id="dashboardSection" data-page="dashboard" aria-labelledby="dashboardHeading">
+					<div class="section-header">
+						<div>
+							<h2 id="dashboardHeading">Dashboard</h2>
+							<p>Monitor leads, pipeline value and follow-up activities.</p>
+						</div>
+						<div class="section-actions">
+							<button type="button" class="btn btn-primary" id="dashboardAddLeadBtn" data-add-lead>
+								<span aria-hidden="true">+</span>
+								<span>Add Lead</span>
+							</button>
+						</div>
+					</div>
+					<div class="dashboard-alert-area" id="dashboardAlertArea"></div>
+					<div class="metrics-grid" id="dashboardMetrics">
+						<article class="metric-card">
+							<div class="metric-card-header">
+								<span class="metric-icon" aria-hidden="true">👥</span>
+								<span class="metric-label">Total Leads</span>
+							</div>
+							<strong class="metric-value" id="totalLeadsMetric">0</strong>
+							<span class="metric-description">All leads in CRM</span>
+						</article>
+						<article class="metric-card">
+							<div class="metric-card-header">
+								<span class="metric-icon" aria-hidden="true">✦</span>
+								<span class="metric-label">New Leads</span>
+							</div>
+							<strong class="metric-value" id="newLeadsMetric">0</strong>
+							<span class="metric-description">Recently created leads</span>
+						</article>
+						<article class="metric-card">
+							<div class="metric-card-header">
+								<span class="metric-icon" aria-hidden="true">✓</span>
+								<span class="metric-label">Qualified Leads</span>
+							</div>
+							<strong class="metric-value" id="qualifiedLeadsMetric">0</strong>
+							<span class="metric-description">Qualified opportunities</span>
+						</article>
+						<article class="metric-card">
+							<div class="metric-card-header">
+								<span class="metric-icon" aria-hidden="true">★</span>
+								<span class="metric-label">Converted Leads</span>
+							</div>
+							<strong class="metric-value" id="convertedLeadsMetric">0</strong>
+							<span class="metric-description">Successfully converted</span>
+						</article>
+						<article class="metric-card">
+							<div class="metric-card-header">
+								<span class="metric-icon" aria-hidden="true">%</span>
+								<span class="metric-label">Conversion Rate</span>
+							</div>
+							<strong class="metric-value" id="conversionRateMetric">0%</strong>
+							<span class="metric-description">Converted / total leads</span>
+						</article>
+						<article class="metric-card">
+							<div class="metric-card-header">
+								<span class="metric-icon" aria-hidden="true">₹</span>
+								<span class="metric-label">Pipeline Value</span>
+							</div>
+							<strong class="metric-value" id="pipelineValueMetric">₹0</strong>
+							<span class="metric-description">Expected lead value</span>
+						</article>
+					</div>
+					<div class="dashboard-grid">
+						<article class="dashboard-card source-distribution-card">
+							<div class="card-header">
+								<div>
+									<h3>Lead Source Distribution</h3>
+									<p>Where your leads are coming from</p>
+								</div>
+							</div>
+							<div class="chart-container" id="dashboardSourceChart" aria-label="Lead source distribution chart">
+								<div class="chart-empty-state">No lead data available.</div>
+							</div>
+						</article>
+						<article class="dashboard-card stage-funnel-card">
+							<div class="card-header">
+								<div>
+									<h3>Lead Stage Funnel</h3>
+									<p>Current pipeline by stage</p>
+								</div>
+							</div>
+							<div class="funnel-container" id="dashboardFunnelChart" aria-label="Lead stage funnel">
+								<div class="chart-empty-state">No lead data available.</div>
+							</div>
+						</article>
+					</div>
+					<div class="dashboard-grid">
+						<article class="dashboard-card followup-summary-card">
+							<div class="card-header">
+								<div>
+									<h3>Follow-up Summary</h3>
+									<p>Track your follow-up activities</p>
+								</div>
+								<a href="#followups" class="card-link" data-section-link="followups">View All</a>
+							</div>
+							<div class="followup-summary-grid" id="dashboardFollowupSummary">
+								<div class="summary-item">
+									<span class="summary-label">Due Today</span>
+									<strong id="dashboardDueToday">0</strong>
+								</div>
+								<div class="summary-item">
+									<span class="summary-label">Upcoming</span>
+									<strong id="dashboardUpcoming">0</strong>
+								</div>
+								<div class="summary-item">
+									<span class="summary-label">Overdue</span>
+									<strong id="dashboardOverdue">0</strong>
+								</div>
+								<div class="summary-item">
+									<span class="summary-label">Completed</span>
+									<strong id="dashboardCompleted">0</strong>
+								</div>
+							</div>
+						</article>
+						<article class="dashboard-card recent-leads-card">
+							<div class="card-header">
+								<div>
+									<h3>Recent Leads</h3>
+									<p>Latest leads added to the CRM</p>
+								</div>
+								<a href="#leads" class="card-link" data-section-link="leads">View All</a>
+							</div>
+							<div class="mini-leads-list" id="recentLeadsList">
+								<p class="empty-message">No leads available.</p>
+							</div>
+						</article>
+					</div>
+				</section>
+				<section class="page-section" id="leadsSection" data-page="leads" aria-labelledby="leadsHeading" hidden>
+					<div class="section-header">
+						<div>
+							<h2 id="leadsHeading">Lead Management</h2>
+							<p>Create, manage, search and track all your leads.</p>
+						</div>
+						<div class="section-actions">
+							<button type="button" class="btn btn-secondary" id="exportLeadsBtn">
+								<span aria-hidden="true">⇩</span>
+								<span>Export CSV</span>
+							</button>
+							<button type="button" class="btn btn-primary" id="addLeadBtn" data-add-lead>
+								<span aria-hidden="true">+</span>
+								<span>Add Lead</span>
+							</button>
+						</div>
+					</div>
+					<div class="filter-panel">
+						<div class="filter-panel-header">
+							<div>
+								<h3>Search & Filters</h3>
+								<p>Find leads using multiple criteria.</p>
+							</div>
+							<button type="button" class="btn btn-text" id="clearFiltersBtn">Clear Filters</button>
+						</div>
+						<div class="filter-grid">
+							<div class="form-group search-group">
+								<label for="leadSearch">Search Leads</label>
+								<div class="search-input-wrapper">
+									<span class="search-icon" aria-hidden="true">⌕</span>
+									<input type="search" id="leadSearch" class="form-control" placeholder="Name, company, email, phone or Lead ID..." autocomplete="off">
+									<button type="button" class="search-clear-btn" id="searchClearBtn" aria-label="Clear search" hidden>×</button>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="statusFilter">Status</label>
+								<select id="statusFilter" class="form-control">
+									<option value="all">All Statuses</option>
+									<option value="New">New</option>
+									<option value="Contacted">Contacted</option>
+									<option value="Interested">Interested</option>
+									<option value="Qualified">Qualified</option>
+									<option value="Proposal">Proposal</option>
+									<option value="Negotiation">Negotiation</option>
+									<option value="Converted">Converted</option>
+									<option value="Lost">Lost</option>
+									<option value="Rejected">Rejected</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="priorityFilter">Priority</label>
+								<select id="priorityFilter" class="form-control">
+									<option value="all">All Priorities</option>
+									<option value="Low">Low</option>
+									<option value="Medium">Medium</option>
+									<option value="High">High</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="sourceFilter">Source</label>
+								<select id="sourceFilter" class="form-control">
+									<option value="all">All Sources</option>
+									<option value="Website">Website</option>
+									<option value="WhatsApp">WhatsApp</option>
+									<option value="Social Media">Social Media</option>
+									<option value="Email">Email</option>
+									<option value="Phone">Phone</option>
+									<option value="Referral">Referral</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="dateFilter">Date Range</label>
+								<select id="dateFilter" class="form-control">
+									<option value="all">All Dates</option>
+									<option value="today">Today</option>
+									<option value="week">This Week</option>
+									<option value="month">This Month</option>
+									<option value="custom">Custom Range</option>
+								</select>
+							</div>
+							<div class="form-group custom-date-group" id="customDateGroup" hidden>
+								<label for="customDateFrom">From</label>
+								<input type="date" id="customDateFrom" class="form-control">
+							</div>
+							<div class="form-group custom-date-group" id="customDateToGroup" hidden>
+								<label for="customDateTo">To</label>
+								<input type="date" id="customDateTo" class="form-control">
+							</div>
+							<div class="form-group">
+								<label for="minValueFilter">Minimum Value</label>
+								<input type="number" id="minValueFilter" class="form-control" min="0" step="1" placeholder="₹0">
+							</div>
+							<div class="form-group">
+								<label for="maxValueFilter">Maximum Value</label>
+								<input type="number" id="maxValueFilter" class="form-control" min="0" step="1" placeholder="₹0">
+							</div>
+						</div>
+					</div>
+					<div class="leads-toolbar">
+						<div class="result-summary">
+							<strong id="leadResultCount">0</strong>
+							<span>leads found</span>
+						</div>
+						<div class="toolbar-controls">
+							<div class="sort-control">
+								<label for="sortField">Sort By</label>
+								<select id="sortField" class="form-control form-control-small">
+									<option value="createdDate">Created Date</option>
+									<option value="value">Expected Value</option>
+									<option value="followUpDate">Follow-up Date</option>
+									<option value="name">Name</option>
+									<option value="company">Company</option>
+								</select>
+								<button type="button" class="sort-direction-btn" id="sortDirectionBtn" aria-label="Sort ascending" aria-pressed="false">↑</button>
+							</div>
+							<div class="view-switcher" role="group" aria-label="Lead display view">
+								<button type="button" class="view-switch-btn active" id="tableViewBtn" data-view="table" aria-pressed="true">
+									<span aria-hidden="true">☷</span>
+									<span>Table</span>
+								</button>
+								<button type="button" class="view-switch-btn" id="kanbanViewBtn" data-view="kanban" aria-pressed="false">
+									<span aria-hidden="true">▦</span>
+									<span>Kanban</span>
+								</button>
+							</div>
+						</div>
+					</div>
+					<div class="leads-view-container">
+						<div class="table-view" id="tableView">
+							<div class="table-responsive">
+								<table class="leads-table">
+									<caption class="sr-only">Lead management table</caption>
+									<thead>
+										<tr>
+											<th scope="col">Lead</th>
+											<th scope="col">Company</th>
+											<th scope="col">Source</th>
+											<th scope="col">Status</th>
+											<th scope="col">Priority</th>
+											<th scope="col">Value</th>
+											<th scope="col">Follow-up</th>
+											<th scope="col">Actions</th>
+										</tr>
+									</thead>
+									<tbody id="leadsTableBody">
+										<tr class="empty-table-row">
+											<td colspan="8">
+												<div class="empty-state">
+													<span class="empty-state-icon" aria-hidden="true">▣</span>
+													<h3>No leads found</h3>
+													<p>Add your first lead or change your search and filter criteria.</p>
+													<button type="button" class="btn btn-primary" id="emptyStateAddLeadBtn" data-add-lead>Add Lead</button>
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="inline-kanban-view" id="inlineKanbanView" hidden>
+							<div class="kanban-board" id="kanbanBoard">
+								<div class="kanban-column" data-status="New">
+									<div class="kanban-column-header">
+										<div>
+											<h3>New</h3>
+											<span class="kanban-count" id="kanbanCountNew">0</span>
+										</div>
+										<button type="button" class="kanban-add-btn" data-status="New" data-kanban-add="New" aria-label="Add lead to New stage">+</button>
+									</div>
+									<div class="kanban-drop-zone" data-status="New" id="kanbanNew"></div>
+								</div>
+								<div class="kanban-column" data-status="Contacted">
+									<div class="kanban-column-header">
+										<div>
+											<h3>Contacted</h3>
+											<span class="kanban-count" id="kanbanCountContacted">0</span>
+										</div>
+										<button type="button" class="kanban-add-btn" data-status="Contacted" data-kanban-add="Contacted" aria-label="Add lead to Contacted stage">+</button>
+									</div>
+									<div class="kanban-drop-zone" data-status="Contacted" id="kanbanContacted"></div>
+								</div>
+								<div class="kanban-column" data-status="Interested">
+									<div class="kanban-column-header">
+										<div>
+											<h3>Interested</h3>
+											<span class="kanban-count" id="kanbanCountInterested">0</span>
+										</div>
+										<button type="button" class="kanban-add-btn" data-status="Interested" data-kanban-add="Interested" aria-label="Add lead to Interested stage">+</button>
+									</div>
+									<div class="kanban-drop-zone" data-status="Interested" id="kanbanInterested"></div>
+								</div>
+								<div class="kanban-column" data-status="Qualified">
+									<div class="kanban-column-header">
+										<div>
+											<h3>Qualified</h3>
+											<span class="kanban-count" id="kanbanCountQualified">0</span>
+										</div>
+										<button type="button" class="kanban-add-btn" data-status="Qualified" data-kanban-add="Qualified" aria-label="Add lead to Qualified stage">+</button>
+									</div>
+									<div class="kanban-drop-zone" data-status="Qualified" id="kanbanQualified"></div>
+								</div>
+								<div class="kanban-column" data-status="Proposal">
+									<div class="kanban-column-header">
+										<div>
+											<h3>Proposal</h3>
+											<span class="kanban-count" id="kanbanCountProposal">0</span>
+										</div>
+										<button type="button" class="kanban-add-btn" data-status="Proposal" data-kanban-add="Proposal" aria-label="Add lead to Proposal stage">+</button>
+									</div>
+									<div class="kanban-drop-zone" data-status="Proposal" id="kanbanProposal"></div>
+								</div>
+								<div class="kanban-column" data-status="Negotiation">
+									<div class="kanban-column-header">
+										<div>
+											<h3>Negotiation</h3>
+											<span class="kanban-count" id="kanbanCountNegotiation">0</span>
+										</div>
+										<button type="button" class="kanban-add-btn" data-status="Negotiation" data-kanban-add="Negotiation" aria-label="Add lead to Negotiation stage">+</button>
+									</div>
+									<div class="kanban-drop-zone" data-status="Negotiation" id="kanbanNegotiation"></div>
+								</div>
+								<div class="kanban-column" data-status="Converted">
+									<div class="kanban-column-header">
+										<div>
+											<h3>Won</h3>
+											<span class="kanban-count" id="kanbanCountConverted">0</span>
+										</div>
+										<button type="button" class="kanban-add-btn" data-status="Converted" data-kanban-add="Converted" aria-label="Add lead to Won stage">+</button>
+									</div>
+									<div class="kanban-drop-zone" data-status="Converted" id="kanbanConverted"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<nav class="pagination" id="leadsPagination" aria-label="Lead pagination">
+						<button type="button" class="pagination-btn" id="previousPageBtn" disabled>‹ Previous</button>
+						<div class="pagination-pages" id="paginationPages"></div>
+						<button type="button" class="pagination-btn" id="nextPageBtn" disabled>Next ›</button>
+					</nav>
+					<div class="pagination-summary">
+						<span id="paginationSummary">Showing 0–0 of 0 leads</span>
+					</div>
+				</section>
+				<section class="page-section" id="kanbanSection" data-page="kanban" aria-labelledby="kanbanHeading" hidden>
+					<div class="section-header">
+						<div>
+							<h2 id="kanbanHeading">Kanban Pipeline</h2>
+							<p>Drag leads between stages to update their status.</p>
+						</div>
+						<div class="section-actions">
+							<button type="button" class="btn btn-primary" id="kanbanAddLeadBtn" data-add-lead>
+								<span aria-hidden="true">+</span>
+								<span>Add Lead</span>
+							</button>
+						</div>
+					</div>
+					<div class="kanban-info-banner">
+						<span class="info-icon" aria-hidden="true">ⓘ</span>
+						<p>Drag and drop a lead card into another stage. Its status will be updated automatically and saved to LocalStorage.</p>
+					</div>
+					<div class="kanban-board full-kanban-board" id="mainKanbanBoard">
+						<div class="kanban-column" data-status="New">
+							<div class="kanban-column-header">
+								<div>
+									<h3>New</h3>
+									<span class="kanban-count" id="mainKanbanCountNew">0</span>
+								</div>
+								<button type="button" class="kanban-add-btn" data-status="New" data-kanban-add="New" aria-label="Add lead to New stage">+</button>
+							</div>
+							<div class="kanban-drop-zone" data-status="New" id="mainKanbanNew"></div>
+						</div>
+						<div class="kanban-column" data-status="Contacted">
+							<div class="kanban-column-header">
+								<div>
+									<h3>Contacted</h3>
+									<span class="kanban-count" id="mainKanbanCountContacted">0</span>
+								</div>
+								<button type="button" class="kanban-add-btn" data-status="Contacted" data-kanban-add="Contacted" aria-label="Add lead to Contacted stage">+</button>
+							</div>
+							<div class="kanban-drop-zone" data-status="Contacted" id="mainKanbanContacted"></div>
+						</div>
+						<div class="kanban-column" data-status="Interested">
+							<div class="kanban-column-header">
+								<div>
+									<h3>Interested</h3>
+									<span class="kanban-count" id="mainKanbanCountInterested">0</span>
+								</div>
+								<button type="button" class="kanban-add-btn" data-status="Interested" data-kanban-add="Interested" aria-label="Add lead to Interested stage">+</button>
+							</div>
+							<div class="kanban-drop-zone" data-status="Interested" id="mainKanbanInterested"></div>
+						</div>
+						<div class="kanban-column" data-status="Qualified">
+							<div class="kanban-column-header">
+								<div>
+									<h3>Qualified</h3>
+									<span class="kanban-count" id="mainKanbanCountQualified">0</span>
+								</div>
+								<button type="button" class="kanban-add-btn" data-status="Qualified" data-kanban-add="Qualified" aria-label="Add lead to Qualified stage">+</button>
+							</div>
+							<div class="kanban-drop-zone" data-status="Qualified" id="mainKanbanQualified"></div>
+						</div>
+						<div class="kanban-column" data-status="Proposal">
+							<div class="kanban-column-header">
+								<div>
+									<h3>Proposal</h3>
+									<span class="kanban-count" id="mainKanbanCountProposal">0</span>
+								</div>
+								<button type="button" class="kanban-add-btn" data-status="Proposal" data-kanban-add="Proposal" aria-label="Add lead to Proposal stage">+</button>
+							</div>
+							<div class="kanban-drop-zone" data-status="Proposal" id="mainKanbanProposal"></div>
+						</div>
+						<div class="kanban-column" data-status="Negotiation">
+							<div class="kanban-column-header">
+								<div>
+									<h3>Negotiation</h3>
+									<span class="kanban-count" id="mainKanbanCountNegotiation">0</span>
+								</div>
+								<button type="button" class="kanban-add-btn" data-status="Negotiation" data-kanban-add="Negotiation" aria-label="Add lead to Negotiation stage">+</button>
+							</div>
+							<div class="kanban-drop-zone" data-status="Negotiation" id="mainKanbanNegotiation"></div>
+						</div>
+						<div class="kanban-column" data-status="Converted">
+							<div class="kanban-column-header">
+								<div>
+									<h3>Won</h3>
+									<span class="kanban-count" id="mainKanbanCountConverted">0</span>
+								</div>
+								<button type="button" class="kanban-add-btn" data-status="Converted" data-kanban-add="Converted" aria-label="Add lead to Won stage">+</button>
+							</div>
+							<div class="kanban-drop-zone" data-status="Converted" id="mainKanbanConverted"></div>
+						</div>
+					</div>
+				</section>
+				<section class="page-section" id="followupsSection" data-page="followups" aria-labelledby="followupsHeading" hidden>
+					<div class="section-header">
+						<div>
+							<h2 id="followupsHeading">Follow-up Management</h2>
+							<p>Manage calls, emails, meetings, demos and WhatsApp activities.</p>
+						</div>
+						<div class="section-actions">
+							<button type="button" class="btn btn-primary" id="addFollowupBtn" data-add-followup>
+								<span aria-hidden="true">+</span>
+								<span>Add Follow-up</span>
+							</button>
+						</div>
+					</div>
+					<div class="followup-alert-container" id="followupAlertContainer"></div>
+					<div class="followup-summary-cards">
+						<article class="summary-card">
+							<span class="summary-card-label">Due Today</span>
+							<strong id="followupsDueToday">0</strong>
+						</article>
+						<article class="summary-card">
+							<span class="summary-card-label">Upcoming</span>
+							<strong id="followupsUpcoming">0</strong>
+						</article>
+						<article class="summary-card">
+							<span class="summary-card-label">Overdue</span>
+							<strong id="followupsOverdue">0</strong>
+						</article>
+						<article class="summary-card">
+							<span class="summary-card-label">Completed</span>
+							<strong id="followupsCompleted">0</strong>
+						</article>
+					</div>
+					<div class="followup-tabs" role="tablist" aria-label="Follow-up status">
+						<button type="button" class="followup-tab active" id="allFollowupsTab" role="tab" aria-selected="true" data-followup-filter="all">All</button>
+						<button type="button" class="followup-tab" id="todayFollowupsTab" role="tab" aria-selected="false" data-followup-filter="today">Today</button>
+						<button type="button" class="followup-tab" id="upcomingFollowupsTab" role="tab" aria-selected="false" data-followup-filter="upcoming">Upcoming</button>
+						<button type="button" class="followup-tab" id="overdueFollowupsTab" role="tab" aria-selected="false" data-followup-filter="overdue">Overdue</button>
+						<button type="button" class="followup-tab" id="completedFollowupsTab" role="tab" aria-selected="false" data-followup-filter="completed">Completed</button>
+					</div>
+					<div class="followups-list" id="followupsList">
+						<div class="empty-state">
+							<span class="empty-state-icon" aria-hidden="true">◷</span>
+							<h3>No follow-ups found</h3>
+							<p>Create a follow-up activity for a lead.</p>
+							<button type="button" class="btn btn-primary" id="emptyFollowupBtn" data-add-followup>Add Follow-up</button>
+						</div>
+					</div>
+				</section>
+				<section class="page-section" id="analyticsSection" data-page="analytics" aria-labelledby="analyticsHeading" hidden>
+					<div class="section-header">
+						<div>
+							<h2 id="analyticsHeading">Analytics</h2>
+							<p>Understand lead performance and sales pipeline health.</p>
+						</div>
+						<div class="section-actions">
+							<button type="button" class="btn btn-secondary" id="refreshAnalyticsBtn">
+								<span aria-hidden="true">↻</span>
+								<span>Refresh</span>
+							</button>
+						</div>
+					</div>
+					<div class="analytics-metrics-grid">
+						<article class="analytics-metric-card">
+							<span class="analytics-metric-label">Total Pipeline Value</span>
+							<strong id="analyticsPipelineValue">₹0</strong>
+							<span>Expected value across active leads</span>
+						</article>
+						<article class="analytics-metric-card">
+							<span class="analytics-metric-label">Conversion Rate</span>
+							<strong id="analyticsConversionRate">0%</strong>
+							<span>Converted leads / total leads</span>
+						</article>
+						<article class="analytics-metric-card">
+							<span class="analytics-metric-label">Average Lead Value</span>
+							<strong id="analyticsAverageValue">₹0</strong>
+							<span>Average expected value</span>
+						</article>
+						<article class="analytics-metric-card">
+							<span class="analytics-metric-label">Qualified Value</span>
+							<strong id="analyticsQualifiedValue">₹0</strong>
+							<span>Value of qualified leads</span>
+						</article>
+					</div>
+					<div class="analytics-grid">
+						<article class="analytics-card">
+							<div class="card-header">
+								<div>
+									<h3>Lead Source Distribution</h3>
+									<p>Distribution of leads by acquisition source.</p>
+								</div>
+							</div>
+							<div class="analytics-chart" id="analyticsSourceChart" aria-label="Lead source distribution"></div>
+						</article>
+						<article class="analytics-card">
+							<div class="card-header">
+								<div>
+									<h3>Lead Stage Funnel</h3>
+									<p>Lead count at each stage.</p>
+								</div>
+							</div>
+							<div class="analytics-chart" id="analyticsFunnelChart" aria-label="Lead stage funnel"></div>
+						</article>
+					</div>
+					<div class="analytics-grid">
+						<article class="analytics-card">
+							<div class="card-header">
+								<div>
+									<h3>Priority Distribution</h3>
+									<p>Current lead priority breakdown.</p>
+								</div>
+							</div>
+							<div class="analytics-chart" id="analyticsPriorityChart" aria-label="Lead priority distribution"></div>
+						</article>
+						<article class="analytics-card">
+							<div class="card-header">
+								<div>
+									<h3>Follow-up Summary</h3>
+									<p>Follow-up activity status.</p>
+								</div>
+							</div>
+							<div class="analytics-chart" id="analyticsFollowupChart" aria-label="Follow-up summary"></div>
+						</article>
+					</div>
+				</section>
+				<section class="page-section" id="importExportSection" data-page="import-export" aria-labelledby="importExportHeading" hidden>
+					<div class="section-header">
+						<div>
+							<h2 id="importExportHeading">Import / Export</h2>
+							<p>Move lead records between the CRM and CSV files.</p>
+						</div>
+					</div>
+					<div class="import-export-grid">
+						<article class="import-export-card">
+							<div class="import-export-icon" aria-hidden="true">⇩</div>
+							<h3>Export Leads</h3>
+							<p>Export your current lead records as a CSV file for reporting, backup or external processing.</p>
+							<div class="export-options">
+								<label for="exportScope">Export Scope</label>
+								<select id="exportScope" class="form-control">
+									<option value="all">All Leads</option>
+									<option value="filtered">Current Filtered Leads</option>
+								</select>
+							</div>
+							<button type="button" class="btn btn-primary" id="exportCsvMainBtn">Export CSV</button>
+						</article>
+						<article class="import-export-card">
+							<div class="import-export-icon" aria-hidden="true">⇧</div>
+							<h3>Import Leads</h3>
+							<p>Upload a CSV file. Valid rows will be imported while invalid rows will be reported clearly.</p>
+							<div class="file-upload-area" id="csvDropArea">
+								<label for="csvFileInput" class="file-upload-label">
+									<span class="file-upload-icon" aria-hidden="true">□</span>
+									<strong>Choose a CSV file</strong>
+									<span>or drag and drop it here</span>
+								</label>
+								<input type="file" id="csvFileInput" accept=".csv,text/csv" hidden>
+							</div>
+							<div class="selected-file" id="selectedCsvFile" hidden></div>
+							<button type="button" class="btn btn-primary" id="importCsvBtn" disabled>Import CSV</button>
+						</article>
+					</div>
+					<div class="import-results" id="importResults" hidden>
+						<div class="card-header">
+							<div>
+								<h3>Import Results</h3>
+								<p>Validation results from the latest CSV import.</p>
+							</div>
+						</div>
+						<div class="import-result-summary" id="importResultSummary"></div>
+						<div class="invalid-rows-container" id="invalidRowsContainer"></div>
+					</div>
+					<article class="csv-format-card">
+						<div class="card-header">
+							<div>
+								<h3>CSV Format</h3>
+								<p>Use these column names when preparing a CSV file.</p>
+							</div>
+						</div>
+						<div class="table-responsive">
+							<table class="csv-format-table">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Name</th>
+										<th>Company</th>
+										<th>Email</th>
+										<th>Phone</th>
+										<th>Industry</th>
+										<th>Source</th>
+										<th>Status</th>
+										<th>Priority</th>
+										<th>Assigned To</th>
+										<th>Value</th>
+										<th>Follow-up Date</th>
+										<th>Notes</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>LD-1001</td>
+										<td>Ravi Kumar</td>
+										<td>ABC Technologies</td>
+										<td>ravi@example.com</td>
+										<td>9876543210</td>
+										<td>IT</td>
+										<td>Website</td>
+										<td>Qualified</td>
+										<td>High</td>
+										<td>Sales Executive</td>
+										<td>250000</td>
+										<td>2026-09-10</td>
+										<td>Interested in enterprise package</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</article>
+				</section>
+				<section class="page-section" id="settingsSection" data-page="settings" aria-labelledby="settingsHeading" hidden>
+					<div class="section-header">
+						<div>
+							<h2 id="settingsHeading">Settings</h2>
+							<p>Manage CRM preferences and display options.</p>
+						</div>
+					</div>
+					<div class="settings-grid">
+						<article class="settings-card">
+							<div class="card-header">
+								<div>
+									<h3>Appearance</h3>
+									<p>Customize how the CRM looks.</p>
+								</div>
+							</div>
+							<div class="setting-row">
+								<div>
+									<strong>Theme</strong>
+									<span>Choose light or dark mode.</span>
+								</div>
+								<select id="settingsThemeSelector" class="form-control form-control-small">
+									<option value="light">Light</option>
+									<option value="dark">Dark</option>
+								</select>
+							</div>
+							<div class="setting-row">
+								<div>
+									<strong>Default Lead View</strong>
+									<span>Choose the preferred lead presentation.</span>
+								</div>
+								<select id="defaultLeadViewSelector" class="form-control form-control-small">
+									<option value="table">Table</option>
+									<option value="kanban">Kanban</option>
+								</select>
+							</div>
+						</article>
+						<article class="settings-card">
+							<div class="card-header">
+								<div>
+									<h3>Role Simulation</h3>
+									<p>Simulate CRM permissions for different roles.</p>
+								</div>
+							</div>
+							<div class="role-description-list">
+								<div class="role-description">
+									<strong>Sales Executive</strong>
+									<p>View assigned leads, add/edit leads, update status and add follow-ups.</p>
+								</div>
+								<div class="role-description">
+									<strong>Manager</strong>
+									<p>View all leads, analytics, assign leads, delete leads and export data.</p>
+								</div>
+							</div>
+							<div class="role-warning">
+								<span aria-hidden="true">ⓘ</span>
+								<p>This is a front-end role simulation and is not secure authentication.</p>
+							</div>
+						</article>
+					</div>
+				</section>
+			</main>
+		</div>
+	</div>
+	<div class="modal-overlay" id="leadModalOverlay" hidden>
+		<div class="modal modal-large" id="leadModal" role="dialog" aria-modal="true" aria-labelledby="leadModalTitle">
+			<div class="modal-header">
+				<div>
+					<h2 id="leadModalTitle">Add New Lead</h2>
+					<p id="leadModalSubtitle">Enter the lead information below.</p>
+				</div>
+				<button type="button" class="modal-close-btn" id="closeLeadModalBtn" data-modal-close aria-label="Close lead form">×</button>
+			</div>
+			<form id="leadForm" novalidate>
+				<input type="hidden" id="leadId">
+				<div class="form-section">
+					<div class="form-section-heading">
+						<h3>Basic Information</h3>
+						<p>Contact and company information.</p>
+					</div>
+					<div class="form-grid">
+						<div class="form-group">
+							<label for="leadName">Name <span class="required">*</span></label>
+							<input type="text" id="leadName" class="form-control" name="name" required maxlength="100" autocomplete="name">
+							<span class="field-error" id="leadNameError"></span>
+						</div>
+						<div class="form-group">
+							<label for="leadCompany">Company <span class="required">*</span></label>
+							<input type="text" id="leadCompany" class="form-control" name="company" required maxlength="150" autocomplete="organization">
+							<span class="field-error" id="leadCompanyError"></span>
+						</div>
+						<div class="form-group">
+							<label for="leadEmail">Email <span class="required">*</span></label>
+							<input type="email" id="leadEmail" class="form-control" name="email" required maxlength="150" autocomplete="email">
+							<span class="field-error" id="leadEmailError"></span>
+						</div>
+						<div class="form-group">
+							<label for="leadPhone">Phone <span class="required">*</span></label>
+							<input type="tel" id="leadPhone" class="form-control" name="phone" required maxlength="20" autocomplete="tel">
+							<span class="field-error" id="leadPhoneError"></span>
+						</div>
+						<div class="form-group">
+							<label for="leadIndustry">Industry <span class="required">*</span></label>
+							<select id="leadIndustry" class="form-control" name="industry" required>
+								<option value="">Select Industry</option>
+								<option value="IT">IT & Software</option>
+								<option value="Healthcare">Healthcare</option>
+								<option value="Finance">Finance</option>
+								<option value="Education">Education</option>
+								<option value="Retail">Retail</option>
+								<option value="Manufacturing">Manufacturing</option>
+								<option value="Real Estate">Real Estate</option>
+								<option value="Marketing">Marketing</option>
+								<option value="Consulting">Consulting</option>
+								<option value="Other">Other</option>
+							</select>
+							<span class="field-error" id="leadIndustryError"></span>
+						</div>
+						<div class="form-group">
+							<label for="leadSource">Lead Source <span class="required">*</span></label>
+							<select id="leadSource" class="form-control" name="source" required>
+								<option value="">Select Source</option>
+								<option value="Website">Website</option>
+								<option value="WhatsApp">WhatsApp</option>
+								<option value="Social Media">Social Media</option>
+								<option value="Email">Email</option>
+								<option value="Phone">Phone</option>
+								<option value="Referral">Referral</option>
+							</select>
+							<span class="field-error" id="leadSourceError"></span>
+						</div>
+					</div>
+				</div>
+				<div class="form-section">
+					<div class="form-section-heading">
+						<h3>Lead Management</h3>
+						<p>Configure status, priority, ownership and commercial value.</p>
+					</div>
+					<div class="form-grid">
+						<div class="form-group">
+							<label for="leadStatus">Lead Status <span class="required">*</span></label>
+							<select id="leadStatus" class="form-control" name="status" required>
+								<option value="New">New</option>
+								<option value="Contacted">Contacted</option>
+								<option value="Interested">Interested</option>
+								<option value="Qualified">Qualified</option>
+								<option value="Proposal">Proposal</option>
+								<option value="Negotiation">Negotiation</option>
+								<option value="Converted">Converted</option>
+								<option value="Lost">Lost</option>
+								<option value="Rejected">Rejected</option>
+							</select>
+							<span class="field-error" id="leadStatusError"></span>
+						</div>
+						<div class="form-group">
+							<label for="leadPriority">Priority <span class="required">*</span></label>
+							<select id="leadPriority" class="form-control" name="priority" required>
+								<option value="">Select Priority</option>
+								<option value="Low">Low</option>
+								<option value="Medium">Medium</option>
+								<option value="High">High</option>
+							</select>
+							<span class="field-error" id="leadPriorityError"></span>
+						</div>
+						<div class="form-group">
+							<label for="assignedTo">Assigned To <span class="required">*</span></label>
+							<select id="assignedTo" class="form-control" name="assignedTo" required>
+								<option value="">Select Sales Representative</option>
+								<option value="Sales Executive">Sales Executive</option>
+								<option value="Rahul Sharma">Rahul Sharma</option>
+								<option value="Priya Reddy">Priya Reddy</option>
+								<option value="Arjun Kumar">Arjun Kumar</option>
+								<option value="Sneha Rao">Sneha Rao</option>
+							</select>
+							<span class="field-error" id="assignedToError"></span>
+						</div>
+						<div class="form-group">
+							<label for="expectedValue">Expected Value <span class="required">*</span></label>
+							<div class="input-with-prefix">
+								<span class="input-prefix">₹</span>
+								<input type="number" id="expectedValue" class="form-control" name="value" required min="0" step="1" placeholder="0">
+							</div>
+							<span class="field-error" id="expectedValueError"></span>
+						</div>
+						<div class="form-group">
+							<label for="followUpDate">Follow-up Date</label>
+							<input type="date" id="followUpDate" class="form-control" name="followUpDate">
+							<span class="field-error" id="followUpDateError"></span>
+						</div>
+					</div>
+				</div>
+				<div class="form-section">
+					<div class="form-section-heading">
+						<h3>Notes</h3>
+						<p>Add additional information about the lead.</p>
+					</div>
+					<div class="form-group">
+						<label for="leadNotes">Notes</label>
+						<textarea id="leadNotes" class="form-control" name="notes" rows="5" maxlength="1000" placeholder="Enter lead notes..."></textarea>
+						<span class="character-count" id="leadNotesCount">0 / 1000</span>
+						<span class="field-error" id="leadNotesError"></span>
+					</div>
+				</div>
+				<div class="form-error-summary" id="leadFormErrorSummary" hidden></div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" id="cancelLeadBtn" data-modal-close>Cancel</button>
+					<button type="submit" class="btn btn-primary" id="saveLeadBtn">
+						<span id="saveLeadBtnText">Save Lead</span>
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+	<div class="modal-overlay" id="leadDetailsModalOverlay" hidden>
+		<div class="modal modal-extra-large" id="leadDetailsModal" role="dialog" aria-modal="true" aria-labelledby="leadDetailsTitle">
+			<div class="modal-header">
+				<div>
+					<h2 id="leadDetailsTitle">Lead Details</h2>
+					<p id="leadDetailsSubtitle">Complete lead profile and activity history.</p>
+				</div>
+				<button type="button" class="modal-close-btn" id="closeLeadDetailsModalBtn" data-modal-close aria-label="Close lead details">×</button>
+			</div>
+			<div class="lead-details-content" id="leadDetailsContent">
+				<div class="lead-profile-header">
+					<div class="lead-avatar" id="leadDetailsAvatar">L</div>
+					<div class="lead-profile-main">
+						<h3 id="detailsLeadName">Lead Name</h3>
+						<p id="detailsLeadCompany">Company</p>
+						<span class="lead-id" id="detailsLeadId">LD-0000</span>
+					</div>
+					<div class="lead-profile-actions">
+						<button type="button" class="btn btn-secondary" id="detailsEditLeadBtn">Edit</button>
+						<button type="button" class="btn btn-primary" id="detailsAddFollowupBtn">Add Follow-up</button>
+					</div>
+				</div>
+				<div class="lead-details-grid">
+					<article class="details-card">
+						<div class="card-header">
+							<h3>Contact Information</h3>
+						</div>
+						<div class="details-list">
+							<div class="details-item">
+								<span>Name</span>
+								<strong id="detailsName">—</strong>
+							</div>
+							<div class="details-item">
+								<span>Company</span>
+								<strong id="detailsCompany">—</strong>
+							</div>
+							<div class="details-item">
+								<span>Email</span>
+								<strong id="detailsEmail">—</strong>
+							</div>
+							<div class="details-item">
+								<span>Phone</span>
+								<strong id="detailsPhone">—</strong>
+							</div>
+							<div class="details-item">
+								<span>Industry</span>
+								<strong id="detailsIndustry">—</strong>
+							</div>
+						</div>
+					</article>
+					<article class="details-card">
+						<div class="card-header">
+							<h3>Commercial Information</h3>
+						</div>
+						<div class="details-list">
+							<div class="details-item">
+								<span>Lead Source</span>
+								<strong id="detailsSource">—</strong>
+							</div>
+							<div class="details-item">
+								<span>Priority</span>
+								<strong id="detailsPriority">—</strong>
+							</div>
+							<div class="details-item">
+								<span>Expected Value</span>
+								<strong id="detailsValue">—</strong>
+							</div>
+							<div class="details-item">
+								<span>Assigned To</span>
+								<strong id="detailsAssignedTo">—</strong>
+							</div>
+							<div class="details-item">
+								<span>Follow-up Date</span>
+								<strong id="detailsFollowupDate">—</strong>
+							</div>
+						</div>
+					</article>
+					<article class="details-card status-details-card">
+						<div class="card-header">
+							<h3>Current Status</h3>
+						</div>
+						<div class="current-status-display">
+							<span class="status-badge" id="detailsStatus">New</span>
+						</div>
+						<div class="status-change-control">
+							<label for="detailsStatusSelector">Change Status</label>
+							<select id="detailsStatusSelector" class="form-control">
+								<option value="New">New</option>
+								<option value="Contacted">Contacted</option>
+								<option value="Interested">Interested</option>
+								<option value="Qualified">Qualified</option>
+								<option value="Proposal">Proposal</option>
+								<option value="Negotiation">Negotiation</option>
+								<option value="Converted">Converted</option>
+								<option value="Lost">Lost</option>
+								<option value="Rejected">Rejected</option>
+							</select>
+						</div>
+					</article>
+					<article class="details-card notes-details-card">
+						<div class="card-header">
+							<h3>Notes</h3>
+						</div>
+						<p id="detailsNotes">No notes available.</p>
+					</article>
+				</div>
+				<section class="activity-timeline-section" aria-labelledby="timelineHeading">
+					<div class="card-header">
+						<div>
+							<h3 id="timelineHeading">Activity Timeline</h3>
+							<p>Chronological history of lead activities.</p>
+						</div>
+					</div>
+					<div class="activity-timeline" id="leadActivityTimeline">
+						<div class="timeline-empty">
+							<p>No activities recorded yet.</p>
+						</div>
+					</div>
+				</section>
+				<section class="lead-followups-section" aria-labelledby="leadFollowupsHeading">
+					<div class="card-header">
+						<div>
+							<h3 id="leadFollowupsHeading">Lead Follow-ups</h3>
+							<p>Follow-up activities associated with this lead.</p>
+						</div>
+						<button type="button" class="btn btn-small btn-primary" id="leadFollowupsAddBtn">Add Follow-up</button>
+					</div>
+					<div class="lead-followups-list" id="leadFollowupsList">
+						<p class="empty-message">No follow-ups for this lead.</p>
+					</div>
+				</section>
+			</div>
+		</div>
+	</div>
+	<div class="modal-overlay" id="followupModalOverlay" hidden>
+		<div class="modal" id="followupModal" role="dialog" aria-modal="true" aria-labelledby="followupModalTitle">
+			<div class="modal-header">
+				<div>
+					<h2 id="followupModalTitle">Add Follow-up</h2>
+					<p>Create a follow-up activity for a lead.</p>
+				</div>
+				<button type="button" class="modal-close-btn" id="closeFollowupModalBtn" data-modal-close aria-label="Close follow-up form">×</button>
+			</div>
+			<form id="followupForm" novalidate>
+				<input type="hidden" id="followupId">
+				<div class="form-group">
+					<label for="followupLead">Lead <span class="required">*</span></label>
+					<select id="followupLead" class="form-control" required>
+						<option value="">Select Lead</option>
+					</select>
+					<span class="field-error" id="followupLeadError"></span>
+				</div>
+				<div class="form-grid">
+					<div class="form-group">
+						<label for="followupDate">Date <span class="required">*</span></label>
+						<input type="date" id="followupDate" class="form-control" required>
+						<span class="field-error" id="followupDateError"></span>
+					</div>
+					<div class="form-group">
+						<label for="followupTime">Time <span class="required">*</span></label>
+						<input type="time" id="followupTime" class="form-control" required>
+						<span class="field-error" id="followupTimeError"></span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="followupType">Type <span class="required">*</span></label>
+					<select id="followupType" class="form-control" required>
+						<option value="">Select Type</option>
+						<option value="Call">Call</option>
+						<option value="Email">Email</option>
+						<option value="Meeting">Meeting</option>
+						<option value="Demo">Demo</option>
+						<option value="WhatsApp">WhatsApp</option>
+					</select>
+					<span class="field-error" id="followupTypeError"></span>
+				</div>
+				<div class="form-group">
+					<label for="followupStatus">Status <span class="required">*</span></label>
+					<select id="followupStatus" class="form-control" required>
+						<option value="Pending">Pending</option>
+						<option value="Completed">Completed</option>
+						<option value="Cancelled">Cancelled</option>
+					</select>
+					<span class="field-error" id="followupStatusError"></span>
+				</div>
+				<div class="form-group">
+					<label for="followupNotes">Notes</label>
+					<textarea id="followupNotes" class="form-control" rows="5" maxlength="500" placeholder="Enter follow-up notes..."></textarea>
+					<span class="character-count" id="followupNotesCount">0 / 500</span>
+					<span class="field-error" id="followupNotesError"></span>
+				</div>
+				<div class="form-error-summary" id="followupFormErrorSummary" hidden></div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" id="cancelFollowupBtn" data-modal-close>Cancel</button>
+					<button type="submit" class="btn btn-primary" id="saveFollowupBtn">Save Follow-up</button>
+				</div>
+			</form>
+		</div>
+	</div>
+	<div class="modal-overlay" id="deleteConfirmModalOverlay" hidden>
+		<div class="modal modal-small" id="deleteConfirmModal" role="dialog" aria-modal="true" aria-labelledby="deleteConfirmTitle">
+			<div class="modal-header">
+				<div>
+					<h2 id="deleteConfirmTitle">Delete Lead?</h2>
+					<p>This action cannot be undone.</p>
+				</div>
+				<button type="button" class="modal-close-btn" id="closeDeleteModalBtn" data-modal-close aria-label="Close confirmation">×</button>
+			</div>
+			<div class="confirmation-content">
+				<div class="confirmation-icon" aria-hidden="true">!</div>
+				<p id="deleteConfirmMessage">Are you sure you want to delete this lead?</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" id="cancelDeleteBtn" data-modal-close>Cancel</button>
+				<button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete Lead</button>
+			</div>
+		</div>
+	</div>
+	<div class="modal-overlay" id="deleteFollowupConfirmModalOverlay" hidden>
+		<div class="modal modal-small" id="deleteFollowupConfirmModal" role="dialog" aria-modal="true" aria-labelledby="deleteFollowupConfirmTitle">
+			<div class="modal-header">
+				<div>
+					<h2 id="deleteFollowupConfirmTitle">Delete Follow-up?</h2>
+					<p>This action cannot be undone.</p>
+				</div>
+				<button type="button" class="modal-close-btn" id="closeDeleteFollowupModalBtn" data-modal-close aria-label="Close confirmation">×</button>
+			</div>
+			<div class="confirmation-content">
+				<div class="confirmation-icon" aria-hidden="true">!</div>
+				<p>Are you sure you want to delete this follow-up?</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" id="cancelDeleteFollowupBtn" data-modal-close>Cancel</button>
+				<button type="button" class="btn btn-danger" id="confirmDeleteFollowupBtn">Delete Follow-up</button>
+			</div>
+		</div>
+	</div>
+	<div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+	<div class="loading-overlay" id="loadingOverlay" hidden>
+		<div class="loading-spinner" aria-hidden="true"></div>
+		<p id="loadingMessage">Loading...</p>
+	</div>
+	<noscript>
+		<div class="noscript-message">
+			<strong>JavaScript is required.</strong>
+			<p>This CRM application requires JavaScript to manage leads, follow-ups, analytics, LocalStorage, CSV files and drag-and-drop functionality.</p>
+		</div>
+	</noscript>
+	<script type="module" src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+const STORAGE_KEYS={leads:"miniCRM_leads",followups:"miniCRM_followups",preferences:"miniCRM_preferences",activities:"miniCRM_activities",readNotifications:"miniCRM_readNotifications"};
+export const LEAD_STATUSES=["New","Contacted","Interested","Qualified","Proposal","Negotiation","Converted","Lost","Rejected"];
+export const KANBAN_STATUSES=["New","Contacted","Interested","Qualified","Proposal","Negotiation","Converted"];
+export const PRIORITIES=["Low","Medium","High"];
+export const FOLLOWUP_TYPES=["Call","Email","Meeting","Demo","WhatsApp"];
+export const FOLLOWUP_STATUSES=["Pending","Completed","Cancelled"];
+export const INDUSTRIES=["IT","Healthcare","Finance","Education","Retail","Manufacturing","Real Estate","Marketing","Consulting","Other"];
+export const SOURCES=["Website","WhatsApp","Social Media","Email","Phone","Referral","Advertisement","Other"];
+const defaultPreferences={theme:"light",view:"table",pageSize:20,role:"Manager"};
+const read=(key,fallback)=>{try{const value=localStorage.getItem(key);return value===null?fallback:JSON.parse(value);}catch(error){console.error(error);return fallback;}};
+const write=(key,value)=>{try{localStorage.setItem(key,JSON.stringify(value));return true;}catch(error){console.error(error);return false;}};
+export const initializeData=()=>{
+	if(localStorage.getItem(STORAGE_KEYS.leads)===null) write(STORAGE_KEYS.leads,[]);
+	if(localStorage.getItem(STORAGE_KEYS.followups)===null) write(STORAGE_KEYS.followups,[]);
+	if(localStorage.getItem(STORAGE_KEYS.preferences)===null) write(STORAGE_KEYS.preferences,defaultPreferences);
+	if(localStorage.getItem(STORAGE_KEYS.activities)===null) write(STORAGE_KEYS.activities,{});
+	if(localStorage.getItem(STORAGE_KEYS.readNotifications)===null) write(STORAGE_KEYS.readNotifications,[]);
+};
+
+export const getLeads=()=>read(STORAGE_KEYS.leads,[]);
+export const saveLeads=leads=>write(STORAGE_KEYS.leads,Array.isArray(leads)?leads:[]);
+export const getFollowups=()=>read(STORAGE_KEYS.followups,[]);
+export const saveFollowups=followups=>write(STORAGE_KEYS.followups,Array.isArray(followups)?followups:[]);
+export const getPreferences=()=>({...defaultPreferences,...read(STORAGE_KEYS.preferences,{})});
+export const savePreferences=value=>write(STORAGE_KEYS.preferences,{...getPreferences(),...value});
+export const getActivities=()=>read(STORAGE_KEYS.activities,{});
+export const saveActivities=value=>write(STORAGE_KEYS.activities,value||{});
+export const getReadNotifications=()=>read(STORAGE_KEYS.readNotifications,[]);
+export const saveReadNotifications=value=>write(STORAGE_KEYS.readNotifications,Array.isArray(value)?value:[]);
+export const generateLeadId=()=>{let max=1000;getLeads().forEach(lead=>{const number=Number(String(lead.id).replace(/\D/g,""));if(Number.isFinite(number)&&number>max) max=number;});return`LD-${max+1}`;};
+export const generateFollowupId=()=>{let max=1000;getFollowups().forEach(item=>{const number=Number(String(item.id).replace(/\D/g,""));if(Number.isFinite(number)&&number>max) max=number;});return`FU-${max+1}`;};
+export const createActivity=(leadId,type,description,user="System")=>{const all=getActivities();if(!all[leadId]) all[leadId]=[];all[leadId].push({id:`ACT-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,leadId,type,description,user,date:new Date().toISOString()});saveActivities(all);};
+export const getLeadActivities=leadId=>getActivities()[leadId]||[];
+export const resetDatabase=()=>{localStorage.removeItem(STORAGE_KEYS.leads);localStorage.removeItem(STORAGE_KEYS.followups);localStorage.removeItem(STORAGE_KEYS.activities);localStorage.removeItem(STORAGE_KEYS.readNotifications);write(STORAGE_KEYS.leads,[]);write(STORAGE_KEYS.followups,[]);write(STORAGE_KEYS.activities,{});write(STORAGE_KEYS.readNotifications,[]);};
+export const exportDatabase=()=>({leads:getLeads(),followups:getFollowups(),preferences:getPreferences(),activities:getActivities()});
+initializeData();
