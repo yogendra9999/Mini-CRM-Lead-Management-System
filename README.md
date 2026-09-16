@@ -60,7 +60,7 @@ The main objectives of this project are:
 ![Follow-ups](assets/screenshots/follow-ups.png)
 
 ### Analytics
-![Analytics](assets/screenshots/analytics.png)
+![Analytics](assets/screenshots/Analytics.png)
 
 ### Notifications
 ![Notifications](assets/screenshots/notifications.png)
