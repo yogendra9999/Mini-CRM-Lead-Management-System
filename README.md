@@ -72,60 +72,10 @@ The main objectives of this project are:
 ![Mobile View](assets/screenshots/mobile-view.png)
 
 
-## Test Results
 
-The Mini CRM & Lead Management System was tested against 40 functional test cases covering lead management, search, filtering, sorting, pagination, Kanban workflow, follow-ups, analytics, LocalStorage persistence, CSV import/export, validation, role-based access, and UI behavior.
 
-### Test Summary
 
-| Metric | Result |
-|---|---:|
-| Total Test Cases | 40 |
-| Passed | 39 |
-| Failed | 1 |
-| Blocked | 0 |
-| Pass Percentage | 97.5% |
 
-### Test Execution Status
-
-- **39 test cases passed** during source-code and functional logic verification.
-- **1 test case failed:** TC-32 – Delete All Leads.
-- The remaining browser-level verification should be performed in the actual browser environment before final submission.
-- Detailed test cases and results are available in `test_cases.xlsx`.
-
-### Failed Test Case
-
-| Test Case | Expected Result | Actual Result | Status |
-|---|---|---|---|
-| TC-32 – Delete All Leads | All leads should be deleted, dashboard metrics should become zero, and an empty state should be displayed. | No dedicated Delete All Leads functionality is currently available in the UI. | Fail |
-
-### Test Coverage
-
-The testing covered:
-
-- Dashboard metrics
-- Lead creation
-- Lead viewing
-- Lead editing
-- Lead deletion
-- Lead search
-- Multiple filters
-- Sorting
-- Pagination
-- Kanban workflow
-- Drag-and-drop status updates
-- Follow-up management
-- Notifications
-- Analytics
-- LocalStorage persistence
-- CSV export
-- CSV import
-- CSV validation
-- Duplicate detection
-- Role-based access
-- Theme settings
-- Responsive UI
-- Form validation
 
 ## Features
 
