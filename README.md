@@ -38,6 +38,9 @@ The main objectives of this project are:
 - Handle edge cases and invalid input.
 - Provide project documentation and testing information.
 
+## Live Demo
+
+[View Live CRM Application]( https://yogendra9999.github.io/Mini-CRM-Lead-Management-System/)
 ## Features
 
 ### Dashboard
